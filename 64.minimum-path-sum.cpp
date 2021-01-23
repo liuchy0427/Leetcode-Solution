@@ -11,20 +11,20 @@ public:
         int m = grid.size();
         int n = grid[0].size();
 
-        vector<vector <int>> dp = grid;
-  
-        for(int i=1;i<n;i++)
-            grid[0][i] += grid[0][i-1];
-        for(int i=1;i<m;i++)
-            grid[i][0] += grid[i-1][0];
+        vector<int> pre(m, grid[0][0]);
+        vector<int> cur(m, 0);
 
-        for(int i=1;i<m;i++){
-            for(int j=1;j<n;j++)
-                grid[i][j] += min(grid[i-1][j], grid[i][j-1]);
-            
+        for(int i=1;i<m;i++)
+            pre[i] = pre[i-1] + grid[i][0];
+        
+        for(int j=1;j<n;j++){
+            cur[0] = pre[0] + grid[0][j];
+            for(int i=1;i<m;i++)
+                cur[i] = min(cur[i-1], pre[i]) + grid[i][j];
+            swap(pre,cur);
         }
 
-        return grid[m-1][n-1];
+        return pre[m-1];
     }
 };
 // @lc code=end
