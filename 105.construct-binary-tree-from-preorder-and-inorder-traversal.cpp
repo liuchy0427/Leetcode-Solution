@@ -18,27 +18,59 @@
  */
 class Solution {
 public:
-    TreeNode* helper(vector<int> preorder, vector<int> inorder, int ps, int pe, int is, int ie){
-        if(ps > pe) return nullptr;
-        int mid;
-        
-        TreeNode* node = new TreeNode(preorder[ps]);
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        int prePos = 0;
+        int inPos = 0;
 
-        for(int i=is;i<=ie;i++){
+        return result(preorder, inorder , INT_MIN, prePos, inPos);
+
+        // return helper(preorder, inorder, 0, preorder.size(), 0, inorder.size());
+    }
+
+    TreeNode* result(vector<int>& preorder, vector<int>& inorder, int stop, int& prePos, int& inPos){
+        cout<<prePos<<" "<<inPos<<endl;
+        if(prePos >= preorder.size())
+            return nullptr;
+        
+        if(inorder[inPos] == stop){
+            inPos++;
+            return nullptr;
+        }
+
+        TreeNode* root = new TreeNode(preorder[prePos]);
+        prePos++;
+        root->left = result(preorder, inorder, root->val, prePos, inPos);
+        root->right = result(preorder, inorder, stop, prePos, inPos);
+
+        return root;
+
+    }
+
+
+
+
+    TreeNode* helper(vector<int>& preorder, vector<int>& inorder, int ps, int pe, int is, int ie){
+        
+        if(ps >= pe)
+            return nullptr;
+
+        // cout<<ps<<" "<<pe<<" : "<<is<<" "<<ie<<endl;
+        TreeNode *root = new TreeNode(preorder[ps]);
+
+        int pos = 0;
+
+        for(int i=is;i<ie;i++){
             if(inorder[i] == preorder[ps]){
-                mid = i;
+                pos = i;
                 break;
             }
         }
-        // cout<<mid<<endl;
-        node->left = helper(preorder, inorder, ps+1, ps + mid - is, is, mid-1);
-        node->right = helper(preorder, inorder, pe - (ie - mid) + 1, pe, mid+1, ie);
 
-        return node;
 
-    }
-    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
-        return helper(preorder, inorder, 0, preorder.size()-1, 0, inorder.size()-1);
+        root->left = helper(preorder, inorder, ps + 1, ps + pos - is + 1, is, pos);
+        root->right = helper(preorder, inorder, ps + pos - is + 1, pe, pos + 1, ie);
+
+        return root;
     }
 };
 // @lc code=end
